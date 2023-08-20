@@ -1,5 +1,17 @@
 window.onload = function(e){ 
 
+    const getText = function(feature) {
+      return feature.get('name');
+    };
+
+    const createTextStyle = function(feature) {
+
+      return new ol.style.Text({      
+        text: getText(feature),
+        font : "bold 10px/1 Verdana" ,
+        overflow : true      
+      });
+    }
 
     const styleFunction = function(feature) {
       console.log(feature.getGeometry().getType());
@@ -12,6 +24,7 @@ window.onload = function(e){
             fill: new ol.style.Fill({
               color: 'rgba(0, 0, 255, 0.1)',
             }),
+            text : createTextStyle(feature)
           });
 
     };
@@ -78,4 +91,58 @@ window.onload = function(e){
         zoom: 13
         })
     });
+
+    const info = document.getElementById('info');
+  info.style.pointerEvents = 'none';
+  const tooltip = new bootstrap.Tooltip(info, {
+    animation: false,
+    customClass: 'pe-none',
+    offset: [0, 0],
+    title: '-',
+    trigger: 'manual',
+  });
+
+  let currentFeature;
+  const displayFeatureInfo = function (pixel, target) {
+    const feature = target.closest('.ol-control')
+      ? undefined
+      : map.forEachFeatureAtPixel(pixel, function (feature) {
+          return feature;
+        });
+    if (feature) {
+      info.style.left = pixel[0] + 'px';
+      info.style.top = pixel[1] + 'px';
+      if (feature !== currentFeature) {
+        tooltip.setContent({'.tooltip-inner': feature.get('name')});
+      }
+      if (currentFeature) {
+        tooltip.update();
+      } else {
+        tooltip.show();
+      }
+    } else {
+      tooltip.hide();
+    }
+    currentFeature = feature;
+  };
+
+  map.on('pointermove', function (evt) {
+    if (evt.dragging) {
+      tooltip.hide();
+      currentFeature = undefined;
+      return;
+    }
+    const pixel = map.getEventPixel(evt.originalEvent);
+    console.log('pixel', pixel[0], ' ', pixel[1]);
+    displayFeatureInfo(pixel, evt.originalEvent.target);
+  });
+
+  map.on('click', function (evt) {
+    displayFeatureInfo(evt.pixel, evt.originalEvent.target);
+  });
+
+  map.getTargetElement().addEventListener('pointerleave', function () {
+    tooltip.hide();
+    currentFeature = undefined;
+  });
 }
