@@ -164,7 +164,7 @@ var map = new Map({
   });
 
   map.getTargetElement().addEventListener('pointerleave', function () {
-    tooltip.hide();
+    //tooltip.hide();
     currentFeature = undefined;
   });
 
