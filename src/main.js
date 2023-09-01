@@ -1,10 +1,26 @@
+import GeoJSON from 'ol/format/GeoJSON.js';
+import Map from 'ol/Map.js';
+import View from 'ol/View.js';
+import {
+  Circle as CircleStyle,
+  Fill,
+  Stroke,
+  Style,
+  Text,
+} from 'ol/style.js';
+import {OSM, Vector as VectorSource} from 'ol/source.js';
+import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer.js';
+import Feature from 'ol/Feature.js';
+import { fromLonLat } from 'ol/proj';
+import { Circle } from 'ol/geom';
+
 const getText = function(feature) {
   return feature.get('name');
 };
 
 const createTextStyle = function(feature) {
 
-  return new ol.style.Text({      
+  return new Text({      
     text: getText(feature),
     font : "bold 10px/1 Verdana" ,
     overflow : true      
@@ -13,13 +29,13 @@ const createTextStyle = function(feature) {
 
 const styleFunction = function(feature) {
   console.log(feature.getGeometry().getType());
-    return new ol.style.Style({
-        stroke: new ol.style.Stroke({
+    return new Style({
+        stroke: new Stroke({
           color: 'blue',
           lineDash: [],
           width: 1,
         }),
-        fill: new ol.style.Fill({
+        fill: new Fill({
           color: 'rgba(0, 0, 255, 0.1)',
         }),
         text : createTextStyle(feature)
@@ -56,34 +72,27 @@ const geojsonObject = {
     ]        
 };
 
-const features = new ol.format.GeoJSON({
+const features = new GeoJSON({
   dataProjection: 'EPSG:4326',
   featureProjection: 'EPSG:3857'
 }).readFeatures(geojsonObject);
 
-const vectorSource = new ol.source.Vector({
+const vectorSource = new VectorSource({
     features: features,
   });
   
 
 
-const vectorSource2 = new ol.source.Vector();
+vectorSource.addFeature(new Feature(new Circle([5e6, 7e6], 1e6)));      
   
-
-vectorSource.addFeature(new ol.Feature(new ol.geom.Circle([5e6, 7e6], 1e6)));      
-  
-const vectorLayer = new ol.layer.Vector({
+const vectorLayer = new VectorLayer({
     source: vectorSource,
     style: styleFunction
   });
 
-var raster = new ol.layer.Tile({
-    source: new ol.source.OSM()
+var raster = new TileLayer({
+    source: new OSM()
     });
-
-
-
-
 
 
 const fillTable = function() {
@@ -103,11 +112,11 @@ const tooltip = new bootstrap.Tooltip(info, {
   trigger: 'manual',
 });
 
-var map = new ol.Map({
+var map = new Map({
   layers: [raster,vectorLayer],
   target: document.getElementById('map'),
-  view: new ol.View({
-  center: ol.proj.fromLonLat([0.1086709, 52.2507585]),
+  view: new View({
+  center: fromLonLat([0.1086709, 52.2507585]),
   zoom: 13
   })
 });
