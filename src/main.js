@@ -155,12 +155,12 @@ var map = new Map({
       return;
     }
     const pixel = map.getEventPixel(evt.originalEvent);
-    console.log('pixel', pixel[0], ' ', pixel[1]);
-    displayFeatureInfo(pixel, evt.originalEvent.target);
+    //console.log('pixel', pixel[0], ' ', pixel[1]);
+    //displayFeatureInfo(pixel, evt.originalEvent.target);
   });
 
   map.on('click', function (evt) {
-    displayFeatureInfo(evt.pixel, evt.originalEvent.target);
+    //displayFeatureInfo(evt.pixel, evt.originalEvent.target);
   });
 
   map.getTargetElement().addEventListener('pointerleave', function () {
