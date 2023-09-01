@@ -13,6 +13,7 @@ import Feature from 'ol/Feature.js';
 import { fromLonLat } from 'ol/proj';
 import { Circle } from 'ol/geom';
 //import { Tooltip } from 'bootstrap';
+import './utils.js';
 
 export default class FeatureMap {
 
@@ -20,7 +21,9 @@ export default class FeatureMap {
     constructor(element,vectorSource) {
         this.element = element;
         this.vectorSource = vectorSource;
+        this.currentHighlight = undefined;
     }
+
 
     getText(feature,resolution) {
         const name = feature.get('name');
@@ -40,15 +43,19 @@ export default class FeatureMap {
 
       
     styleFunction(feature,resolution) {
-        console.log(feature.getGeometry().getType());
-          return new Style({
+        const fillColour = (feature == this.currentHighlight) ? 
+        'rgba(255, 0, 255, 0.6)' : 'rgba(0, 0, 255, 0.1)';
+
+        const strokeWidth = (feature == this.currentHighlight) ? 6 : 4;
+        
+        return new Style({
               stroke: new Stroke({
-                color: 'blue',
+                color: fillColour,
                 lineDash: [],
-                width: 1,
+                width: strokeWidth,
               }),
               fill: new Fill({
-                color: 'rgba(0, 0, 255, 0.1)',
+                color: fillColour,
               }),
               text : this.createTextStyle(feature,resolution)
             });
@@ -78,7 +85,7 @@ export default class FeatureMap {
         };
 
     render() {
-        const vectorLayer = new VectorLayer({
+        this.vectorLayer = new VectorLayer({
             source: this.vectorSource,
             style: this.styleFunction.bind(this)
         });
@@ -101,7 +108,7 @@ export default class FeatureMap {
         */
     
         this.map = new Map({
-            layers: [raster,vectorLayer],
+            layers: [raster,this.vectorLayer],
             target: this.element,
             view: new View({
                 center: fromLonLat([0.1086709, 52.2507585]),
@@ -134,18 +141,23 @@ export default class FeatureMap {
         */
     }
 
-    highlightFeature(feature) {
 
-        
+
+    highlightFeature(feature, entering) {
+        console.log("highlight", feature);
+        if(entering) {
+            this.currentHighlight = feature;
+        } else {
+            this.currentHighlight = undefined;
+        }
+        this.vectorLayer.changed();
+    }
+
+    zoomToFeature(feature) {
+        console.log("zoom" , feature);
+
+        var extent = feature.getGeometry().getExtent();
+        this.map.getView().fit(extent, { padding : [20,20,20,20]}); 
+
     }
 }
-
-/**
- * @param {number} n The max number of characters to keep.
- * @return {string} Truncated string.
- */
-String.prototype.trunc =
-  String.prototype.trunc ||
-  function (n) {
-    return this.length > n ? this.substr(0, n - 1) + '...' : this.substr(0);
-  };

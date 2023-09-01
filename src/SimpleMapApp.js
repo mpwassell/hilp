@@ -10,10 +10,12 @@ export default class SimpleFeatureMapApp {
         this.element = element;
         this.vectorSource = vectorSource;
 
-
         this.map = new FeatureMap( $('#map')[0],this.vectorSource);
         this.table = new FeatureTable( $('#features'), this.vectorSource,
-        { onHover : this.map.highlightFeature.bind(this.map)});
+          { 
+            onHover : this.map.highlightFeature.bind(this.map),
+            onClick : this.map.zoomToFeature.bind(this.map) 
+        } );
      
 
     }
