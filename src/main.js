@@ -13,6 +13,7 @@ import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer.js';
 import Feature from 'ol/Feature.js';
 import { fromLonLat } from 'ol/proj';
 import { Circle } from 'ol/geom';
+//import { Tooltip } from 'bootstrap';
 
 const getText = function(feature) {
   return feature.get('name');
@@ -104,6 +105,7 @@ window.onload = function(e){
 
   const info = document.getElementById('info');
 info.style.pointerEvents = 'none';
+/*
 const tooltip = new bootstrap.Tooltip(info, {
   animation: false,
   customClass: 'pe-none',
@@ -111,6 +113,7 @@ const tooltip = new bootstrap.Tooltip(info, {
   title: '-',
   trigger: 'manual',
 });
+*/
 
 var map = new Map({
   layers: [raster,vectorLayer],
