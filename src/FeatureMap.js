@@ -44,9 +44,9 @@ export default class FeatureMap {
       
     styleFunction(feature,resolution) {
         const fillColour = (feature == this.currentHighlight) ? 
-        'rgba(255, 0, 255, 0.6)' : 'rgba(0, 0, 255, 0.1)';
+        'rgba(255, 0, 255, 0.6)' : 'rgba(0, 0, 255, 0.3)';
 
-        const strokeWidth = (feature == this.currentHighlight) ? 6 : 4;
+        const strokeWidth = (feature == this.currentHighlight) ? 10 : 5;
         
         return new Style({
               stroke: new Stroke({
